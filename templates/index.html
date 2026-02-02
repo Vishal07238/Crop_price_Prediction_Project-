@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soyabean Price Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f7f4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-container { max-width: 900px; margin: 50px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { color: #2ecc71; font-weight: 700; font-size: 2.5rem; }
+        .header p { color: #7f8c8d; }
+        .price-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .btn-predict { background-color: #2ecc71; border: none; padding: 12px 40px; font-size: 1.1rem; border-radius: 30px; width: 100%; transition: all 0.3s; }
+        .btn-predict:hover { background-color: #27ae60; transform: translateY(-2px); }
+        
+        /* Result Box Styles */
+        .result-box { display: none; margin-top: 30px; animation: fadeIn 0.5s; }
+        .pred-card { padding: 20px; border-radius: 15px; color: white; text-align: center; }
+        .pred-card h3 { font-size: 1.2rem; opacity: 0.9; }
+        .pred-card .price { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
+        .bg-3day { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .bg-7day { background: linear-gradient(135deg, #00b4db, #0083b0); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-container">
+        <div class="header">
+            <h1>🌾 Soyabean Price Prediction</h1>
+            <p>Real-time APMC price forecasting using Machine Learning</p>
+        </div>
+
+        <form id="predictForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Last Known Date</label>
+                    <input type="date" class="form-control" id="date" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Select APMC Market</label>
+                    <input type="text" class="form-control" id="market" list="markets" placeholder="Type to search..." required>
+                    <datalist id="markets">
+                        <option value="Aarni APMC">
+                        <option value="Achhalpur APMC">
+                        <option value="Ahmednagar APMC">
+                        <option value="Ahmedpur APMC">
+                        <option value="Akhadabalapur APMC">
+                        <option value="Akkalkot APMC">
+                        <option value="Akola APMC">
+                        <option value="Akot APMC">
+                        <option value="Amalner APMC">
+                        <option value="Amarawati APMC">
+                        <option value="Ambad (Vadigodri) APMC">
+                        <option value="Ambejaogai APMC">
+                        <option value="Anajngaon APMC">
+                        <option value="Arvi APMC">
+                        <option value="Ashti APMC">
+                        <option value="Ashti(Jalna) APMC">
+                        <option value="Ashti(Karanja) APMC">
+                        <option value="Aurad Shahajani APMC">
+                        <option value="Ausa APMC">
+                        <option value="BSK Krishi Bazar Private Ltd APMC">
+                        <option value="Babhulgaon APMC">
+                        <option value="Balapur APMC">
+                        <option value="Baramati APMC">
+                        <option value="Barshi APMC">
+                        <option value="Barshi Takli APMC">
+                        <option value="Barshi(Vairag) APMC">
+                        <option value="Basmat APMC">
+                        <option value="Beed APMC">
+                        <option value="Bhadrawati APMC">
+                        <option value="Bhandara APMC">
+                        <option value="Bhiwapur APMC">
+                        <option value="Bhokar APMC">
+                        <option value="Bhokardan APMC">
+                        <option value="Bhokardan(Pimpalgaon Renu) APMC">
+                        <option value="Bhoom APMC">
+                        <option value="Bori APMC">
+                        <option value="Bori Arab APMC">
+                        <option value="Buldhana APMC">
+                        <option value="Buldhana(Dhad) APMC">
+                        <option value="Chakur APMC">
+                        <option value="Chalisgaon APMC">
+                        <option value="Chandrapur APMC">
+                        <option value="Chandur Bazar APMC">
+                        <option value="Chandur Railway APMC">
+                        <option value="Chandvad APMC">
+                        <option value="Chattrapati Sambhajinagar APMC">
+                        <option value="Chikali APMC">
+                        <option value="Chimur APMC">
+                        <option value="Chopada APMC">
+                        <option value="Cottoncity Agro Foods Private Ltd APMC">
+                        <option value="Daryapur APMC">
+                        <option value="Deoulgaon Raja APMC">
+                        <option value="Deulgaon Raja Balaji Agro Marketing Private Market APMC">
+                        <option value="Devani APMC">
+                        <option value="Dhamngaon-Railway APMC">
+                        <option value="Dharangaon APMC">
+                        <option value="Dharashiv APMC">
+                        <option value="Dharmabad APMC">
+                        <option value="Dharni APMC">
+                        <option value="Dhule APMC">
+                        <option value="Digras APMC">
+                        <option value="Dudhani APMC">
+                        <option value="Gajanan Krushi Utpanna Bazar (India) Pvt Ltd APMC">
+                        <option value="Gangakhed APMC">
+                        <option value="Gangapur APMC">
+                        <option value="Gevrai APMC">
+                        <option value="Ghansawangi APMC">
+                        <option value="Ghatanji APMC">
+                        <option value="Hadgaon APMC">
+                        <option value="Hadgaon(Tamsa) APMC">
+                        <option value="Himalyatnagar APMC">
+                        <option value="Hinganghat APMC">
+                        <option value="Hingoli APMC">
+                        <option value="Hingoli(Kanegoan Naka) APMC">
+                        <option value="Indapur(Bhigwan) APMC">
+                        <option value="Jafrabad APMC">
+                        <option value="Jalna APMC">
+                        <option value="Jalgaon APMC">
+                        <option value="Jalgaon Jamod(Aasalgaon) APMC">
+                        <option value="Jalgaon(Jamod) APMC">
+                        <option value="Jalgaon(Masawat) APMC">
+                        <option value="Jalkot APMC">
+                        <option value="Jamkhed APMC">
+                        <option value="Jawala-Bajar APMC">
+                        <option value="Jaykissan Krushi Uttpan Khajgi Bazar APMC">
+                        <option value="Jintur APMC">
+                        <option value="Kada APMC">
+                        <option value="Kaij APMC">
+                        <option value="Kalamb (Dharashiv) APMC">
+                        <option value="Kalamb APMC">
+                        <option value="Kalmnuri APMC">
+                        <option value="Kalmeshwar APMC">
+                        <option value="Kalvan APMC">
+                        <option value="Kandhar APMC">
+                        <option value="Kannad APMC">
+                        <option value="Karanja APMC">
+                        <option value="Karjat APMC">
+                        <option value="Karjat(Rashin) APMC">
+                        <option value="Katol APMC">
+                        <option value="Khamgaon APMC">
+                        <option value="Kille Dharur APMC">
+                        <option value="Kinwat APMC">
+                        <option value="Kisan Market Yard APMC">
+                        <option value="Kopargaon APMC">
+                        <option value="Krushna Krishi Bazar APMC">
+                        <option value="Lasalgaon APMC">
+                        <option value="Lasalgaon(Niphad) APMC">
+                        <option value="Lasalgaon(Vinchur) APMC">
+                        <option value="Lasur Station APMC">
+                        <option value="Latur APMC">
+                        <option value="Latur(Murud) APMC">
+                        <option value="Loha APMC">
+                        <option value="Lonar APMC">
+                        <option value="MS Kalpana Agri Commodities Marketing APMC">
+                        <option value="Mahagaon APMC">
+                        <option value="Maharaja Agresen Private Krushi Utappan Bazar Sama APMC">
+                        <option value="Mahesh Krushi Utpanna Bazar, Digras APMC">
+                        <option value="Majalgaon APMC">
+                        <option value="Malegaon APMC">
+                        <option value="Malegaon(Vashim) APMC">
+                        <option value="Malkapur APMC">
+                        <option value="Mandhal APMC">
+                        <option value="Mangrulpeer APMC">
+                        <option value="Manmad APMC">
+                        <option value="Manora APMC">
+                        <option value="Mantha APMC">
+                        <option value="Manwat APMC">
+                        <option value="Mauda APMC">
+                        <option value="Mehekar APMC">
+                        <option value="Morshi APMC">
+                        <option value="Motala APMC">
+                        <option value="Mudkhed APMC">
+                        <option value="Mukhed APMC">
+                        <option value="Mukhed(Mukkambad) APMC">
+                        <option value="Murtizapur APMC">
+                        <option value="Murum APMC">
+                        <option value="Nagpur APMC">
+                        <option value="Naigaon APMC">
+                        <option value="Nanded APMC">
+                        <option value="Nandgaon APMC">
+                        <option value="Nandgaon Khandeshwar APMC">
+                        <option value="Nandura APMC">
+                        <option value="Nandurbar APMC">
+                        <option value="Ner Parasopant APMC">
+                        <option value="Newasa APMC">
+                        <option value="Nilanga APMC">
+                        <option value="Nira(Saswad) APMC">
+                        <option value="Pachora APMC">
+                        <option value="Paithan APMC">
+                        <option value="Palam APMC">
+                        <option value="Pandhakawada APMC">
+                        <option value="Parali Vaijyanath APMC">
+                        <option value="Paranda APMC">
+                        <option value="Parbhani APMC">
+                        <option value="Partur APMC">
+                        <option value="Pathari APMC">
+                        <option value="Patoda APMC">
+                        <option value="Patur APMC">
+                        <option value="Pulgaon APMC">
+                        <option value="Purna APMC">
+                        <option value="Pusad APMC">
+                        <option value="Rahata APMC">
+                        <option value="Rahuri APMC">
+                        <option value="Rajura APMC">
+                        <option value="Ralegaon APMC">
+                        <option value="Risod APMC">
+                        <option value="Sakri APMC">
+                        <option value="Sangamner APMC">
+                        <option value="Savner APMC">
+                        <option value="Selu APMC">
+                        <option value="Shahada APMC">
+                        <option value="Shegaon APMC">
+                        <option value="Shirpur APMC">
+                        <option value="Shirur APMC">
+                        <option value="Sillod APMC">
+                        <option value="Sindi APMC">
+                        <option value="Sinner APMC">
+                        <option value="Solapur APMC">
+                        <option value="Tasgaon APMC">
+                        <option value="Telhara APMC">
+                        <option value="Tuljapur APMC">
+                        <option value="Tumsar APMC">
+                        <option value="Udgir APMC">
+                        <option value="Umarga APMC">
+                        <option value="Umarkhed APMC">
+                        <option value="Wardha APMC">
+                        <option value="Washim APMC">
+                        <option value="Yeola APMC">
+                        <option value="Yeotmal APMC">
+                    </datalist>
+                </div>
+
+                <div class="col-12 mt-4"><h5>Last 7 Days Prices (₹)</h5></div>
+                
+                <div class="col-md-6"><label>Day 1 Price (Oldest)</label><input type="number" class="form-control price-input" required value="4500"></div>
+                <div class="col-md-6"><label>Day 2 Price</label><input type="number" class="form-control price-input" required value="4500"></div>
+                <div class="col-md-6"><label>Day 3 Price</label><input type="number" class="form-control price-input" required value="4500"></div>
+                <div class="col-md-6"><label>Day 4 Price</label><input type="number" class="form-control price-input" required value="4500"></div>
+                <div class="col-md-6"><label>Day 5 Price</label><input type="number" class="form-control price-input" required value="4500"></div>
+                <div class="col-md-6"><label>Day 6 Price</label><input type="number" class="form-control price-input" required value="4500"></div>
+                <div class="col-md-6"><label>Day 7 Price (Latest)</label><input type="number" class="form-control price-input" required value="4500"></div>
+
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary btn-predict">Predict Price</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="error-msg" class="alert alert-danger mt-3" style="display:none;"></div>
+
+        <div id="result-section" class="row result-box">
+            <div class="col-md-6">
+                <div class="pred-card bg-3day">
+                    <h3>3-Day Prediction</h3>
+                    <div class="price">₹ <span id="price_3"></span></div>
+                    <small>Forecast for <span id="date_3"></span></small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="pred-card bg-7day">
+                    <h3>7-Day Prediction</h3>
+                    <div class="price">₹ <span id="price_7"></span></div>
+                    <small>Forecast for <span id="date_7"></span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('predictForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Collect Data
+    const inputs = document.querySelectorAll('.price-input');
+    const prices = Array.from(inputs).map(i => parseFloat(i.value));
+    
+    // Ensure market is selected
+    const marketVal = document.getElementById('market').value;
+    if(!marketVal) {
+        alert("Please select a market");
+        return;
+    }
+
+    const payload = {
+        date: document.getElementById('date').value,
+        market: marketVal,
+        prices: prices
+    };
+
+    const errorDiv = document.getElementById('error-msg');
+    const resultDiv = document.getElementById('result-section');
+    errorDiv.style.display = 'none';
+    resultDiv.style.display = 'none';
+
+    try {
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            errorDiv.textContent = "Error: " + data.error;
+            errorDiv.style.display = 'block';
+        } else {
+            // Update UI with predictions
+            document.getElementById('price_3').textContent = data.pred_3;
+            document.getElementById('date_3').textContent = data.date_3;
+            
+            document.getElementById('price_7').textContent = data.pred_7;
+            document.getElementById('date_7').textContent = data.date_7;
+            
+            resultDiv.style.display = 'flex';
+        }
+    } catch (err) {
+        errorDiv.textContent = "Failed to connect to server.";
+        errorDiv.style.display = 'block';
+    }
+});
+</script>
+
+</body>
+</html>

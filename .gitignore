@@ -1,0 +1,25 @@
+# --- Virtual Environments (Most Important) ---
+# Your folder is named .venv, so this line is critical:
+.venv/
+venv/
+env/
+
+# --- Python Cache Files (Junk) ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Jupyter Notebook Checkpoints ---
+.ipynb_checkpoints/
+
+# --- Environment Variables (Security) ---
+.env
+
+# --- IDE/Editor Settings (Optional but good) ---
+.vscode/
+.idea/
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
